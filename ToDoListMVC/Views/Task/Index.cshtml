@@ -15,15 +15,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.Description)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LimeDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Reminder)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Note)
-            </th>
             <th></th>
         </tr>
     </thead>
@@ -32,15 +23,6 @@
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LimeDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Reminder)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Note)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

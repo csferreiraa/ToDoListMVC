@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using ToDoListMVC.Database;
 using ToDoListMVC.Models;
 
@@ -27,16 +24,13 @@ namespace ToDoListMVC.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var tasks = await _context.Tasks
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (tasks == null)
-            {
                 return NotFound();
-            }
 
             return View(tasks);
         }
@@ -50,27 +44,25 @@ namespace ToDoListMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([FromForm] Tasks tasks)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(tasks);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(tasks);
+            if (!ModelState.IsValid)
+                return View();
+
+            _context.Add(tasks);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var tasks = await _context.Tasks.FindAsync(id);
+
             if (tasks == null)
-            {
                 return NotFound();
-            }
+
             return View(tasks);
         }
 
@@ -79,9 +71,7 @@ namespace ToDoListMVC.Controllers
         public async Task<IActionResult> Edit(int id, Tasks tasks)
         {
             if (id != tasks.Id)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
@@ -101,24 +91,23 @@ namespace ToDoListMVC.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(tasks);
         }
 
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var tasks = await _context.Tasks
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (tasks == null)
-            {
                 return NotFound();
-            }
 
             return View(tasks);
         }
@@ -128,8 +117,11 @@ namespace ToDoListMVC.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var tasks = await _context.Tasks.FindAsync(id);
+
             _context.Tasks.Remove(tasks);
+
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
