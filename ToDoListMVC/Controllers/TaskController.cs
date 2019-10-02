@@ -137,24 +137,19 @@ namespace ToDoListMVC.Controllers
         {
             var teste = await _context.Tasks.ToListAsync();
 
-            var stream = new MemoryStream();
-            var writeFile = new StreamWriter(stream);
-            var csv = new CsvWriter(writeFile);
-            csv.Configuration.RegisterClassMap<TaskCsvMap>();
-            csv.WriteRecords(teste);
+            using (var stream = new MemoryStream())
+            {
+                using (var writeFile = new StreamWriter(stream))
+                {
+                    var csv = new CsvWriter(writeFile);
 
-            stream.Position = 0; //reset stream
-            return File(stream, "application/octet-stream", "tasks.csv");
-
+                    csv.WriteRecords(teste);
+                    //Limpa todos os buffers para o gravador atual e faz com que todos os dados armazenados em buffer sejam gravados no fluxo subjacente.
+                    writeFile.Flush();
+                    return File(stream.ToArray(), "application/octet-stream", "Tasks.csv");
+                }
+            }
         }
     }
 
-    public class TaskCsvMap : ClassMap<Tasks>
-    {
-        public TaskCsvMap()
-        {
-            Map(x => x.Description).Name("Description");
-            Map(x => x.Id).Name("Id");
-        }
-    }
 }
