@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ToDoListMVC.Database;
@@ -31,7 +35,6 @@ namespace ToDoListMVC.Controllers
 
             if (tasks == null)
                 return NotFound();
-
             return View(tasks);
         }
 
@@ -128,6 +131,30 @@ namespace ToDoListMVC.Controllers
         private bool TasksExists(int id)
         {
             return _context.Tasks.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> Download()
+        {
+            var teste = await _context.Tasks.ToListAsync();
+
+            var stream = new MemoryStream();
+            var writeFile = new StreamWriter(stream);
+            var csv = new CsvWriter(writeFile);
+            csv.Configuration.RegisterClassMap<TaskCsvMap>();
+            csv.WriteRecords(teste);
+
+            stream.Position = 0; //reset stream
+            return File(stream, "application/octet-stream", "tasks.csv");
+
+        }
+    }
+
+    public class TaskCsvMap : ClassMap<Tasks>
+    {
+        public TaskCsvMap()
+        {
+            Map(x => x.Description).Name("Description");
+            Map(x => x.Id).Name("Id");
         }
     }
 }
